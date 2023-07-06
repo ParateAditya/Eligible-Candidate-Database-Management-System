@@ -179,7 +179,7 @@ Course* insert_course(Mcc **mcc_head, Course *head, char course_name[], int sem,
     {
         if(mcc_node->sem==sem && strcmp(mcc_node->dept, dept)==0) 
         {
-            if(num_classes > mcc_node->max_classes_conducted)  // changing couurse name and the mum of classes
+            if(num_classes > mcc_node->max_classes_conducted)  // changing couurse name and the num of classes
             {
                 mcc_node->max_classes_conducted=num_classes;
                 strcpy(mcc_node->course_name , course_name);
@@ -236,13 +236,11 @@ void add_student(Mcc **mcc_head, Course* head, Student** last, char name[], char
     for(i=0;i<5;i++)
     {
         new_student->classes_conducted[i]=current->num_classes;
-        // printf("%s\n" , current->course_name);
+        
         if(strcmp(current->course_name,mcc_current->course_name)==0)
         {
             mcc_current->pos=i;
             (new_student->this_attendance)->numOfClasses = classes_attended[i];
-            // new_student->this_attendance->percentageAttendance = classes_attended[i] * (1.0/mcc_current->highest_classes_attended)*100;
-
         }
         current=current->next;
     }
@@ -254,7 +252,6 @@ void add_student(Mcc **mcc_head, Course* head, Student** last, char name[], char
             if(new_student->classes_attended[i]>mcc_current->highest_classes_attended)
             {
                 mcc_current->highest_classes_attended=new_student->classes_attended[i];
-                // printf("%s %d %d     /////" , mcc_current->dept , mcc_current->sem , mcc_current->highest_classes_attended);
             }
         }
     }
@@ -296,7 +293,7 @@ Attendance** create_attend_list(Mcc *mcc_head, Student* last)
             {
                 temp=temp->next;
             }
-            current->this_attendance->percentageAttendance=current->classes_attended[temp->pos]*(1.0/temp->highest_classes_attended)*100;
+            current->this_attendance->percentageAttendance = current->classes_attended[temp->pos]*(1.0/temp->highest_classes_attended)*100;
             current->this_attendance->next=arr[(current->sem)/2-1];
             arr[(current->sem)/2-1]=current->this_attendance;
             current=current->next;
@@ -309,9 +306,7 @@ void updatePercentageAttendance(Student* last  , Mcc *mcc_head){
     Student* current = last->next;
     while(current!=last){
         Mcc* temp = mcc_head;
-        // while(temp!=NULL && strcmp(temp->dept,current->dept)!=0 && current->sem!=temp->sem){
-        //     temp=temp->next;
-        // }
+
         int status = 0 ;
         while(temp!=NULL && status==0){
             if(strcmp(temp->dept,current->dept)==0 && current->sem==temp->sem){
@@ -320,14 +315,8 @@ void updatePercentageAttendance(Student* last  , Mcc *mcc_head){
             if(status==0)
                 temp = temp->next;
         }
-        // while(temp!=NULL && current->sem!=temp->sem){
-        //     temp=temp->next;
-        // }
-        // while(temp!=NULL && strcmp(temp->dept,current->dept)!=0){
-        //     temp=temp->next;
-        // }
-        // printf("%d %d %d %s %d" ,temp->pos , current->classes_attended[temp->pos] ,  temp->highest_classes_attended , temp->dept , temp->sem);
-        current->this_attendance->percentageAttendance=current->classes_attended[temp->pos]*(1.0/temp->highest_classes_attended)*100;
+       
+        current->this_attendance->percentageAttendance = current->classes_attended[temp->pos]*(1.0/temp->highest_classes_attended)*100;
         current=current->next;
     }
         Mcc* temp = mcc_head;
@@ -701,14 +690,14 @@ StudentList*  CreatelistOfDefaulters(Student* last){
 int main()
 {
     Course* course= NULL;
-    Student* s = NULL;
+    Student* s = NULL;    // circular LL
     Mcc* mcc = NULL;
     FILE *filePointer ;
      
  
     filePointer = fopen("courses.txt", "r") ;
     if(filePointer==NULL){
-        printf("Doesn't Exist!!\n");
+        printf("Course file doesn't exist!!\n");
     }
     char course_name[7];
     int sem;
@@ -721,7 +710,7 @@ int main()
     
     filePointer = fopen("students.txt", "r") ;
     if(filePointer==NULL){
-        printf("Doesn't Exist!!\n");
+        printf("Students file doesn't exist!!\n");
     }
     char name[50];
     char rno[11];
@@ -742,23 +731,19 @@ int main()
         }
         strcpy(rno , temp);
         fscanf(filePointer , "%s %d %d %d %d %d %d", dept , &sem, &attendanceOfStud[4] , &attendanceOfStud[3] , &attendanceOfStud[2] , &attendanceOfStud[1] , &attendanceOfStud[0] );
-        add_student(&mcc,course , &s , name , dept , sem , rno ,attendanceOfStud);
+        add_student(&mcc, course , &s , name , dept , sem , rno ,attendanceOfStud);
     }
     fclose(filePointer) ;
 
 
     updatePercentageAttendance(s , mcc);
-   
-    
-    // while(mcc!=NULL){
-    //     printf("%s %d %d %d mmmmmmmmmmm\n" , mcc->dept , mcc->sem , mcc->pos , mcc->highest_classes_attended);
-    //     mcc=mcc->next;
-    // }
+       
     Fee* fee_list =  create_fee_list(s);
     Applicant* appllicant_ist = create_applicant_list(s);
+
 // Q1
     s = student_sort(s);
-//Q2  Display year wise and then the department-wise names of the students who did not apply for the examination
+// Q2  Display year wise and then the department-wise names of the students who did not apply for the examination
     printf("\nyear wise and then the department-wise names of the students who did not apply for the examination:\n ");
     print_apply_na(s);
 // Q3
@@ -770,7 +755,7 @@ int main()
     }
 
 
-//Q4
+// Q4
     printf("\nCreated a list of students having attendance <=75%% .\n");
     StudentList* listOfStudentsHavingLessThanOrEqTo75 =  lessThanOrEqTo75(s);
     while(listOfStudentsHavingLessThanOrEqTo75!=NULL){
@@ -778,28 +763,31 @@ int main()
         listOfStudentsHavingLessThanOrEqTo75=listOfStudentsHavingLessThanOrEqTo75->next;
     }
 
-//Q5
+// Q5
     printf("\nCreated a list of students having attendance >75%% but feee status pending  .\n");
     print_MoreAttendencePendingStatus(s);
 
-//Q6
+// Q6
     printf("\nList of Defaulters : \n");
     StudentList* listOfDefaulters = CreatelistOfDefaulters(s);
      while(listOfDefaulters!=NULL){
         printf("%-30s %s\n" , listOfDefaulters->name , listOfDefaulters->rno);
         listOfDefaulters=listOfDefaulters->next;
     }
-	printf("\n");
-    // print(s);
-    // printf("\n");
-    
+	printf("\n");    
 
     Attendance** arrayy;
     arrayy = create_attend_list(mcc , s);
-    printf("YO\n");
-    while(arrayy[0]!=NULL){
-        printf("%s %f\n" , arrayy[0]->rno , arrayy[0]->percentageAttendance);
-        arrayy[0]=arrayy[0]->next;
+    
+    // arrayy[0] --> 2nd sem 
+    // arrayy[1] --> 4th sem 
+    // arrayy[2] --> 6th sem 
+    // arrayy[3] --> 8th sem 
+    printf("Attendance of 2nd sem students : \n");
+    Attendance* secondSemAttendanceList = arrayy[0];
+    while(secondSemAttendanceList!=NULL){
+        printf("%s %.2f%%\n" , secondSemAttendanceList->rno , secondSemAttendanceList->percentageAttendance);
+        secondSemAttendanceList=secondSemAttendanceList->next;
     }
     return 0;
 }
