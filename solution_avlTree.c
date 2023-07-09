@@ -739,6 +739,7 @@ AVLAppRecordNode* deleteAppRecordFromAVL( AVLAppRecordNode* AppRec , char rollNu
                 return retVal;
             }else{
                 AVLAppRecordNode* nextNode = IOS4(AppRec->right);
+                free(AppRec->stuApp);
                 AppRec->stuApp = nextNode->stuApp;
                 int IOSSem = 0;
                 AppRec->right = deleteAppRecordFromAVL(AppRec->right ,nextNode->stuApp->rollNumber, &IOSSem );
@@ -799,6 +800,7 @@ AVLFeeRecordNode* deleteFeeRecordFromAVL( AVLFeeRecordNode* FeeRec , char rollNu
                 return retVal;
             }else{
                 AVLFeeRecordNode* nextNode = IOS3(FeeRec->right);
+                free(FeeRec->stuFee);
                 FeeRec->stuFee = nextNode->stuFee;
                 int done1 = 0;
                 FeeRec->right = deleteFeeRecordFromAVL(FeeRec->right ,nextNode->stuFee->rollNumber, &done1 );
@@ -860,6 +862,7 @@ AVLAttendanceRecordNode* deleteAttendanceRecordFromAVL( AVLAttendanceRecordNode*
                 return retVal;
             }else{
                 AVLAttendanceRecordNode* nextNode = IOS2(attendRec->right);
+                free(attendRec->stuAtt);
                 attendRec->stuAtt = nextNode->stuAtt;
                 int done1 = 0;
                 attendRec->right = deleteAttendanceRecordFromAVL(attendRec->right ,nextNode->stuAtt->rollNumber, &done1 );
